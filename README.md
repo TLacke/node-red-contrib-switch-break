@@ -4,6 +4,8 @@ If the data matches *Break on* value, it will send a break signal to the connect
 If the data matches *Accept on* value, a removal of the break will be sent to all connected actors and enables their traffic again.
 
 ![node-appearance](assets/sb_dir_node-appearance.png "Node appearance")  
+![node-appearance](assets/sb_act_node-appearance.png "Node appearance")  
+
 **Fig. 2:** Node appearance
 
 <a name="installation"></a>
@@ -95,8 +97,6 @@ Informs about the break director that is connected.
 ### Example 1: Basic usage
 This example shows the basic usage.
 The configuration simulates two different directors and two actors *(one actor per director)* and gives you the option to manually activate and deactive the break for a director to try out the functionality and see how it affects the actors.
-
-<img src="assets/sb_example-1.png" title="Example 1" width="537" />
 
 [**example-1.json**](examples/example-1.json)  
 **Fig. 5:** Basic usage example

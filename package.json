@@ -1,0 +1,30 @@
+{
+    "name": "node-red-contrib-switch-break",
+    "version": "1.0.0",
+    "description": "A Node-RED denial of traffic service",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TLacke/node-red-contrib-switch-break.git"
+    },
+    "keywords": [
+        "node",
+        "node-red",
+        "sensor",
+        "switch",
+        "halt",
+        "break",
+        "traffic",
+        "state-machine"
+    ],
+    "node-red": {
+        "nodes": {
+            "switchBreak": "switchBreak.js"
+        }
+    },
+    "bugs": {
+        "url": "https://github.com/TLacke/node-red-contrib-switch-break/issues"
+    },
+    "homepage": "https://github.com/TLacke/node-red-contrib-switch-break#readme",
+    "author": "Tommy Lacke <tommy.lacke@gmail.com>",
+    "license": "MIT"
+}

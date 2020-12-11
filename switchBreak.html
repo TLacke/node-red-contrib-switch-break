@@ -1,0 +1,343 @@
+
+<script type="text/html" data-template-name="break director">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]text.name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-inputValue" data-i18n="label.input"></label>
+        <input type="text" id="node-input-inputValue" style="width:70%">
+        <input type="hidden" id="node-input-inputType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-lockValue" data-i18n="label.onLock"></label>
+        <input type="text" id="node-input-lockValue" style="width:70%">
+        <input type="hidden" id="node-input-lockType">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-unlockValue" data-i18n="label.onUnlock"></label>
+        <input type="text" id="node-input-unlockValue" style="width:70%">
+        <input type="hidden" id="node-input-unlockType">
+    </div>
+
+    <div class="form-row">
+        <input type="checkbox" id="node-input-defaultState" style="margin-left: 0px; vertical-align: top; width: auto !important;"> <i class="fa fa-toggle-on"></i> <label style="width:auto !important;" for="node-input-defaultState" data-i18n="label.defaultState"></label>
+    </div>
+
+    <div class="form-row">
+        <input type="checkbox" id="node-input-useTimeOut" style="margin-left: 0px; vertical-align: top; width: auto !important;"> <i class="fa fa-clock-o"></i> <label style="width:auto !important;" for="node-input-useTimeOut" data-i18n="label.useTimeOut"></label>
+    </div>
+
+    <div class="form-row node-type-timeOut">
+        <i class="fa fa-clock-o"></i> <label for="node-input-timeOut" data-i18n="label.timeOut"></label>
+        <input type="text" id="node-input-timeOut" style="text-align:end; width:50px !important"> 
+        <select id="node-input-timeOutUnit" style="width:170px !important">
+            <option value="ms" data-i18n="label.time.ms"></option>
+            <option value="s" data-i18n="label.time.s"></option>
+            <option value="m" data-i18n="label.time.m"></option>
+            <option value="h" data-i18n="label.time.h"></option>
+            <option value="d" data-i18n="label.time.d"></option>
+        </select>
+    </div>
+
+    <div style="position:relative; height: 30px; text-align: right;"><div style="display:inline-block"><input type="text" id="node-input-actors"></div></div>
+    <div class="form-row node-input-link-row"></div>
+</script>
+
+
+<script type="text/html" data-template-name="break actor">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]text.name">
+    </div>
+    
+    <div class="form-row">
+        <input type="checkbox" id="node-input-resendLast" style="margin-left: 0px; vertical-align: top; width: auto !important;"> <i class="fa fa-clock-o"></i> <label style="width:auto !important;" for="node-input-resendLast" data-i18n="label.resend"></label>
+    </div>
+    
+    <div class="form-row">
+        <label for="node-input-director"><i class="fa fa-tag"></i> <span data-i18n="label.master"></span></label>
+        <input type="text" id="node-input-director" readonly data-i18n="[placeholder]text.unknown">
+    </div>
+</script>
+
+
+<script type="text/javascript">
+(function() {
+
+    var treeList;
+
+    function onEditPrepareActor(node) {
+    }
+
+    function onSelectDirector(node,select) {
+        var candidateNodes = RED.nodes.filterNodes({type:"break director"});
+        
+        candidateNodes.forEach( n => {
+            if (n.id==node.director) {
+                n.highlighted = select;
+                n.dirty = true;
+                RED.view.redraw();
+            }
+        });
+    }
+
+    function onEditPrepareDirector(node) {
+        if (!node.actors) {
+            node.actors = [];
+        }
+        node.oldActors = [];
+
+        var activeSubflow = RED.nodes.subflow(node.z);
+
+        treeList = $("<div>")
+            .css({width: "100%", height: "100%"})
+            .appendTo(".node-input-link-row")
+            .treeList({})
+            .on('treelistitemmouseover',function(e,item) {
+                if (item.node) {
+                    item.node.highlighted = true;
+                    item.node.dirty = true;
+                    RED.view.redraw();
+                }
+            })
+            .on('treelistitemmouseout',function(e,item) {
+                if (item.node) {
+                    item.node.highlighted = false;
+                    item.node.dirty = true;
+                    RED.view.redraw();
+                }
+            });
+        var candidateNodes = RED.nodes.filterNodes({type:"break actor"});
+        candidateNodes = candidateNodes.filter(n => n.director == "" || n.director == node.id);
+
+        var search = $("#node-input-actors").searchBox({
+            style: "compact",
+            delay: 300,
+            change: function() {
+                var val = $(this).val().trim().toLowerCase();
+                if (val === "") {
+                    treeList.treeList("filter", null);
+                    search.searchBox("count","");
+                } else {
+                    var count = treeList.treeList("filter", function(item) {
+                        return item.label.toLowerCase().indexOf(val) > -1 || (item.node && item.node.type.toLowerCase().indexOf(val) > -1)
+                    });
+                    search.searchBox("count",count+" / "+candidateNodes.length);
+                }
+            }
+        });
+
+
+        var flows = [];
+        var flowMap = {};
+
+        if (activeSubflow) {
+            flowMap[activeSubflow.id] = {
+                id: activeSubflow.id,
+                class: 'red-ui-palette-header',
+                label:  "Subflow : "+(activeSubflow.name || activeSubflow.id),
+                expanded: true,
+                children: []
+            };
+            flows.push(flowMap[activeSubflow.id])
+        } else {
+            RED.nodes.eachWorkspace(function(ws) {
+                flowMap[ws.id] = {
+                    id: ws.id,
+                    class: 'red-ui-palette-header',
+                    label: (ws.label || ws.id)+(node.z===ws.id ? " *":""),
+                    expanded: true,
+                    children: []
+                }
+                flows.push(flowMap[ws.id])
+            })
+        }
+
+        candidateNodes.forEach(function(n) {
+            if (flowMap[n.z]) {
+                var isChecked = n.director===node.id;
+
+                if (isChecked) {
+                    node.oldActors.push(n.id);
+                }
+                flowMap[n.z].children.push({
+                    id: n.id,
+                    node: n,
+                    label: n.name||n.id,
+                    selected: isChecked,
+                    checkbox: true
+                })
+            }
+        });
+        flows = flows.filter(function(f) { return f.children.length > 0 })
+        treeList.treeList('data',flows);
+        setTimeout(function() {
+            treeList.treeList('show',node.z);
+        },100);
+    }
+
+    function onEditSaveDirector(node) {
+        var flows = treeList.treeList('data');
+        node.actors = [];
+        flows.forEach(function(f) {
+            f.children.forEach(function(n) {
+                if (n.selected) {
+                    node.actors.push(n.id);
+                }
+            })
+        })
+        node.oldActors.sort();
+        node.actors.sort();
+        var nodeMap = {};
+        var length = Math.max(node.oldActors.length,node.actors.length);
+        for (var i=0;i<length;i++) {
+            if (i<node.oldActors.length) {
+                nodeMap[node.oldActors[i]] = nodeMap[node.oldActors[i]]||{};
+                nodeMap[node.oldActors[i]].old = true;
+            }
+            if (i<node.actors.length) {
+                nodeMap[node.actors[i]] = nodeMap[node.actors[i]]||{};
+                nodeMap[node.actors[i]].new = true;
+            }
+        }
+        var n;
+        for (var id in nodeMap) {
+            if (nodeMap.hasOwnProperty(id)) {
+                n = RED.nodes.node(id);
+                if (n) {
+                    if (nodeMap[id].old && !nodeMap[id].new)
+                        n.director = "";
+                    if (!nodeMap[id].old && nodeMap[id].new)
+                        n.director = node.id;
+                }
+            }
+        }
+    }
+
+    function onEditSaveActor(node) {
+    }
+
+    function resizeNodeList() {
+        var rows = $("#dialog-form>div:not(.node-input-link-row)");
+        var height = $("#dialog-form").height();
+        for (var i=0;i<rows.length;i++) {
+            height -= $(rows[i]).outerHeight(true);
+        }
+        var editorRow = $("#dialog-form>div.node-input-link-row");
+        height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+        $(".node-input-link-row").css("height",height+"px");
+    }
+
+    // In
+    RED.nodes.registerType('break director',{
+        category: 'function',
+        color:"#a6cb6f",
+        defaults: {
+            name: {value:""},
+            actors: { value: [] },
+            
+            inputType: {value:"msg"},
+            inputValue: {value:"payload", validate: RED.validators.typedInput("inputType")},
+            
+            lockType: {value:"bool", validate: v => !(v == "else" && $("#node-input-unlockType").val() == "else") },
+            lockValue: {value:true, validate: RED.validators.typedInput("lockType")},
+
+            unlockType: {value:"else", validate: v => !(v == "else" && $("#node-input-lockType").val() == "else") },
+            unlockValue: {value:false, validate: RED.validators.typedInput("unlockType")},
+
+            defaultState: {value:false},
+
+            useTimeOut: {value:false},
+            timeOut: {value:"30",required:true,validate:RED.validators.number()},
+            timeOutUnit: {value:"s"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-hand-o-right",
+        outputLabels: function(i) {
+            return this.name||this._("node.master");
+        },
+        label: function() {
+            return this.name||this._("node.master");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            var node = this;
+            onEditPrepareDirector(this);
+
+            var optionElse = {value:"else",label:this._("option.else"),hasValue:false,validate:v=>!($("#node-input-lockType").val() == "else" && $("#node-input-unlockType").val() == "else")};
+
+            $("#node-input-inputValue").typedInput({
+                types:["msg","flow","global","env"],
+                typeField: "#node-input-inputType"
+            });
+            $("#node-input-lockValue").typedInput({
+                type:"bool",
+                types:["msg","flow","global","str","num","bool","re","env",optionElse],
+                typeField: "#node-input-lockType"
+            });
+
+            $("#node-input-unlockValue").typedInput({
+                type:"bool",
+                types:["msg","flow","global","str","num","bool","re","env",optionElse],
+                typeField: "#node-input-unlockType"
+            });
+            
+            $('#node-input-useTimeOut').change(()=>{
+                if ($('#node-input-useTimeOut').is(':checked')) {
+                    $('.node-type-timeOut').show();
+                } else {
+                    $('.node-type-timeOut').hide();
+                }
+            });
+            $('#node-input-useTimeOut').trigger('change');
+        },
+        oneditsave: function() {
+            onEditSaveDirector(this);
+        },
+        oneditresize: resizeNodeList
+    });
+
+    // Out
+    RED.nodes.registerType('break actor',{
+        category: 'function',
+        color:"#a6cb6f",
+        defaults: {
+            name: {value:"" },
+            link:{value:""},
+            director: { value: "" },
+            resendLast: { value: false }
+        },
+        align:"right",
+        inputs:1,
+        outputs:1,
+        icon: "font-awesome/fa-hand-paper-o",
+        inputLabels: function(i) {
+            return this.name||this._("node.slave");
+        },
+        label: function() {
+            return this.name||this._("node.slave");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        oneditprepare: function() {
+            onEditPrepareActor(this);
+            onSelectDirector(this,true);
+        },
+        oneditsave: function() {
+            onSelectDirector(this,false);
+            onEditSaveActor(this);
+        },
+        oneditcancel: function() {
+            onSelectDirector(this,false);
+        }
+    });
+})();
+</script>

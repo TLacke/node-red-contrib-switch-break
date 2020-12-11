@@ -1,0 +1,86 @@
+<script type="text/html" data-help-name="break director">
+  <p>
+  The switch break director node is a mid point listener that only sits between a two nodes and listens to data traffic.
+  If the data matches <code>Break on</code> value, it will send a break signal to the connected actors that disables their traffic throughput.
+  If the data matches <code>Accept on</code> value, a removal of the break will be sent to all connected actors and enables their traffic again.
+  </p>
+  <h3>Inputs</h3>
+  <dl class="message-properties">
+    <dt class="optional">Name</dt>
+    <dd>The name of this node. <i>(Will reflect what's shown on the node.)</i>
+    </dd>
+  
+    <dt>Input<span class="property-type">msg.[] | flow.[] | global.[] | env. variable</span></dt>
+    <dd>The value to read and validate against the <code><b>Break on</code></b> and <code><b>Accept on</code></b> values.
+    <ul>
+    <li>If the input value doesn't match any of the two values, it will be ignored and just sent through.</li>
+    <li>If matches the <code><b>Break on</code></b> value, it will send a break signal to all connected <code>break actors</code>.</li>
+    <li>If matches the <code><b>Accept on</code></b> value, it will send a accept signal that removes all the breaks from the connected <code>break actors</code>.</li>
+    </ul>
+    </dd>
+  
+    <dt>Break on</dt>
+    <dd>The <b><code>input</code></b> value needs to match this field trigger an activation of the break.
+    </dd>
+  
+    <dt>Accept on</dt>
+    <dd>The <b><code>input</code></b> value needs to match this field trigger an deactivation of the break.
+    </dd>
+  
+    <dt>Break by default</dt>
+    <dd>If <b>checked</b>, the initial state of the director and all its connected actors will be in a break/lock state, otherwise <i>(if not checked)</i>, it will accept traffic.
+    </dd>
+  
+    <dt>Use timeout</dt>
+    <dd>If <b>checked</b>, then a time out can be set that will automatically reset the director's and all its connect actors to the default state.
+    </dd>
+  
+    <dt>Time out<span class="property-type">milliseconds | seconds | minutes | hours | days</span></dt>
+    <dd>The time to wait before returning to the default <code>Break on default</code> state.
+    </dd>
+  
+    <dt>The box</dt>
+    <dd>The box will present all the available actors that has not yet been assigned to a director.
+    All the selected actors will be linked to this director and react to its state changes.
+    </dd>
+  </dl>
+  
+  <h3>Details</h3>
+  <p>The director will only listen to messages and send them through, but if matching the break state it will send a lock to the connected actors that will block all their traffic.
+  </p>
+  
+  <h3>References</h3>
+      <ul>
+       <li><a href="https://github.com/TLacke/node-red-multi-sensor">GitHub</a> - GitHub repository</li>
+      </ul>
+  </script>
+
+  <script type="text/html" data-help-name="break actor">
+    <p>
+    The switch break actor node is a mid point node that has the ability to block traffic. It will listen to a director and taking instructions from it to either allow or block traffic through it.
+    </p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+      <dt class="optional">Name</dt>
+      <dd>The name of this node. <i>(Will reflect what's shown on the node, but also the name in the directors list.)</i>
+      </dd>
+    
+      <dt>Re-send last message on unlock</dt>
+      <dd>If <b>checked</b>, the last received message will be sent through as soon as this actor entering an <b>unlocked</b> state.
+      </dd>
+    
+      <dt>Director</dt>
+      <dd>Informs about the break director that is connected.
+      </dd>
+    </dl>
+    
+    <h3>Details</h3>
+    <p>The actor will listen to the connected <code>break director</code> and depending on what it receives, it will deny the received traffic from being sent through.
+    If the <code>Re-send last messatge on unlock</code>, is checked and currently <code>locked</code>, it will store the last recieved message and send it out as soon as the node getting unlocked.
+    </p>
+    
+    <h3>References</h3>
+        <ul>
+         <li><a href="https://github.com/TLacke/node-red-contrib-switch-break">GitHub</a> - GitHub repository</li>
+        </ul>
+    </script>

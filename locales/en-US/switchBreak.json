@@ -1,0 +1,39 @@
+{
+    "label": {
+        "name": "Name:",
+        "input": "Input:",
+        "resend": "Re-send last message on unlock",
+        "onLock": "Break on:",
+        "onUnlock": "Accept on:",
+        "master": "Director:",
+        "defaultState": "Break by default",
+        "useTimeOut": "Use timeout",
+        "timeOut": "Time out:",
+
+        "time":{
+            "ms": "milliseconds",
+            "s": "seconds",
+            "m": "minutes",
+            "h": "hours",
+            "d": "days"
+        }
+    },
+    "text": {
+        "name": "name",
+        "unknown": "no director link"
+    },
+    "node": {
+        "master": "break director",
+        "slave": "break actor"
+    },
+    "option": {
+        "else": "otherwise"
+    },
+    "status": {
+        "active":"active",
+        "inactive":"inactive",
+        "locked":"locked",
+        "unlocked":"unlocked",
+        "na":"untouched"
+    }
+}

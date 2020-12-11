@@ -23,7 +23,7 @@ If the data matches *Accept on* value, a removal of the break will be sent to al
 <a name="usage"></a>
 ## Usage
 
-![node-explain](assets/sb_explain_large.png "Node explaination")<br>
+![node-explain](assets/sb_explain.png "Node explaination")<br>
 **Fig. 3:** Node explaination
 To give an understanding on how the node works, we can take a look at this where you have two <img src="assets/sb_dir_node-appearance.png" title="break director"/> that will listen to inputs, investigate the data send it through. When the investigation of the data is done, it can, depending on the data:
 * Nothing

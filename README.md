@@ -3,8 +3,8 @@ The switch break director node is a mid point listener that only sits between a 
 If the data matches *Break on* value, it will send a break signal to the connected actors that disables their traffic throughput.
 If the data matches *Accept on* value, a removal of the break will be sent to all connected actors and enables their traffic again.
 
-![node-appearance](assets/sb_node-appearance.png "Node appearance")  
-**Fig. 1:** Node appearance
+![node-appearance](assets/sb_dir_node-appearance.png "Node appearance")  
+**Fig. 2:** Node appearance
 
 <a name="installation"></a>
 ## Installation
@@ -21,7 +21,7 @@ If the data matches *Accept on* value, a removal of the break will be sent to al
 <a name="usage"></a>
 ## Usage
 
-![node-explain](assets/sb_explain_large.png "Node explaination")
+![node-explain](assets/sb_explain_large.png "Node explaination")<br>
 **Fig. 3:** Node explaination
 To give an understanding on how the node works, we can take a look at this where you have two <img src="assets/sb_dir_node-appearance.png" title="break director"/> that will listen to inputs, investigate the data send it through. When the investigation of the data is done, it can, depending on the data:
 * Nothing
@@ -32,8 +32,8 @@ When an activation of the break is done, it sends a lock signal to all connected
 
 The second part is the <img src="assets/sb_act_node-appearance.png" title="break actor"/>. These works like a denial of service and halt the traffic when locked by the <img src="assets/sb_dir_node-appearance.png" title="break director"/>.
 
-![node-appearance](assets/sb_node-appearance.png "Node appearance")  
-**Fig. 1:** Node appearance
+![node-appearance](assets/sb_act_node-appearance.png "Node appearance")  
+**Fig. 3:** Node appearance
 DATA
 
 <a name="node_configuration"></a>
@@ -41,7 +41,7 @@ DATA
 The node configuration sets up how the <img src="assets/sb_dir_node-appearance.png" title="break director"/> should react.
 
 ![node-settings](assets/sb_dir_node-settings.png "Node properties")  
-**Fig. 2:** Node properties
+**Fig. 3:** Node properties
 
 #### Name (optional)
 *(Optional)* The name of this node. *(Will change the content of the node to the name)*
@@ -72,7 +72,7 @@ All the selected actors will be linked to this director and react to its state c
 The node configuration sets up how the <img src="assets/sb_act_node-appearance.png" title="break actor"/> should react.
 
 ![node-settings](assets/sb_act_node-settings.png "Node properties")  
-**Fig. 2:** Node properties
+**Fig. 4:** Node properties
 
 #### Name (optional)
 *(Optional)* The name of this node. *(Will reflect what's shown on the node, but also the name in the directors list.)*
@@ -99,7 +99,7 @@ The configuration simulates two different directors and two actors *(one actor p
 <img src="assets/sb_example-1.png" title="Example 1" width="537" />
 
 [**example-1.json**](examples/example-1.json)  
-**Fig. 4:** Basic usage example
+**Fig. 5:** Basic usage example
 
 
 

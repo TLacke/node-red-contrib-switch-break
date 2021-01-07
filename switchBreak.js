@@ -121,7 +121,7 @@ module.exports = function(RED) {
                 }
 
                 // If not default state, then set timeout.
-                if (res != config.defaultState) {
+                if (res != config.defaultState && config.useTimeOut) {
                     hReset = setTimeout(()=>{
                         locked = config.defaultState;
                         updateStatus(locked);

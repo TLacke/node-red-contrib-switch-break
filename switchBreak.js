@@ -65,10 +65,10 @@ module.exports = function(RED) {
         var hReset;
         var h;
 
-        if (config.timeOutUnit === "milliseconds") this.timeOut = config.timeOut;
-        else if (config.timeOutUnit === "minutes") this.timeOut = config.timeOut * (60 * 1000);
-        else if (config.timeOutUnit === "hours")   this.timeOut = config.timeOut * (60 * 60 * 1000);
-        else if (config.timeOutUnit === "days")    this.timeOut = config.timeOut * (24 * 60 * 60 * 1000);
+        if (config.timeOutUnit === "ms")     this.timeOut = config.timeOut;
+        else if (config.timeOutUnit === "m") this.timeOut = config.timeOut * (60 * 1000);
+        else if (config.timeOutUnit === "h") this.timeOut = config.timeOut * (60 * 60 * 1000);
+        else if (config.timeOutUnit === "d") this.timeOut = config.timeOut * (24 * 60 * 60 * 1000);
         else this.timeOut = config.timeOut * 1000;
 
         function updateStatus(res) {
